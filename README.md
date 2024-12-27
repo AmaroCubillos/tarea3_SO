@@ -1,1 +1,1 @@
-# tarea3_SO
+# Sincronización de threads
