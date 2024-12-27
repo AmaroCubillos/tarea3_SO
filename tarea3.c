@@ -150,6 +150,16 @@ void indefinido() {
 int main(int argc, char *argv[]) {
     int opt;
 
+    // Entrada:
+    // -b: tamaño del buffer
+    // -h: número de productores de harina
+    // -c: número de productores de carne
+    // -v: número de productores de vegetales 
+    // -e: número de productores de especias
+    // -x: número de chefs tipo X
+    // -y: número de chefs tipo Y
+    // -z: número de chefs tipo Z
+    // -i: total de platos a preparar
     while ((opt = getopt(argc, argv, "b:h:c:v:e:x:y:z:i:")) != -1) {
         switch (opt) {
             case 'b': config.tam_buffer = atoi(optarg); break;
@@ -165,6 +175,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    // si alguno es inválido, muestra el uso correcto y termina el programa
     if (config.tam_buffer <= 0 || config.num_harina <= 0 || config.num_carne <= 0 ||
         config.num_vegetales <= 0 || config.num_especias <= 0 || config.num_chef_x <= 0 ||
         config.num_chef_y <= 0 || config.num_chef_z <= 0 || config.total <= 0) {
@@ -181,11 +192,13 @@ int main(int argc, char *argv[]) {
     buffer_vegetales = crear_buffer(config.tam_buffer);
     buffer_especias = crear_buffer(config.tam_buffer);
 
+    // calcula el número total de hilos necesarios
     pthread_t threads[config.num_harina + config.num_carne + config.num_vegetales + config.num_especias +
                       config.num_chef_x + config.num_chef_y + config.num_chef_z];
 
     int thread_index = 0;
 
+    // crea los hilos productores
     for (int i = 0; i < config.num_harina; i++) {
         ThreadArgs *args = malloc(sizeof(ThreadArgs));
         args->id = i;
@@ -214,6 +227,8 @@ int main(int argc, char *argv[]) {
         args->buffer = buffer_especias;
         pthread_create(&threads[thread_index++], NULL, productor, args);
     }
+
+    // crea los hilos para los chefs
     for (int i = 0; i < config.num_chef_x; i++) {
         ThreadArgs *args = malloc(sizeof(ThreadArgs));
         args->id = i;
@@ -230,6 +245,7 @@ int main(int argc, char *argv[]) {
         pthread_create(&threads[thread_index++], NULL, chef_Z, args);
     }
 
+    // espera a que todos los hilos terminen su ejecución
     for (int i = 0; i < thread_index; i++) {
         pthread_join(threads[i], NULL);
     }
