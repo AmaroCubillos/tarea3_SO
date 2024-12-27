@@ -13,35 +13,35 @@ typedef struct {
     int num_chef_x;
     int num_chef_y;
     int num_chef_z;
-    int total_platos;
+    int total;
 } Config;
 
 typedef struct {
     int *buffer;
     int in;
     int out;
-    sem_t espacios_libres;
-    sem_t espacios_utilizados;
+    sem_t libres;
+    sem_t utilizados;
     pthread_mutex_t mutex;
-} BufferCircular;
+} BufferC;
 
 typedef struct {
     int id;
     char *tipo;
-    BufferCircular *buffer;
+    BufferC *buffer;
 } ThreadArgs;
 
 extern Config config;
-extern BufferCircular *buffer_harina;
-extern BufferCircular *buffer_carne;
-extern BufferCircular *buffer_vegetales;
-extern BufferCircular *buffer_especias;
+extern BufferC *buffer_harina;
+extern BufferC *buffer_carne;
+extern BufferC *buffer_vegetales;
+extern BufferC *buffer_especias;
 extern sem_t batidora, sarten;
-extern int platos_preparados;
+extern int preparados;
 extern pthread_mutex_t mutex_platos;
 
-BufferCircular* crear_buffer(int tamano);
-void liberar_buffer(BufferCircular *buffer);
+BufferC* crear_buffer(int tamano);
+void liberar_buffer(BufferC *buffer);
 
 void *productor(void *arg);
 void *chef_X(void *arg);
@@ -50,6 +50,6 @@ void *chef_Z(void *arg);
 
 int verificar_termino();
 
-void mostrar_ayuda();
+void indefinido();
 
 #endif
